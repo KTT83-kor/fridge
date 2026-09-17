@@ -34,6 +34,17 @@ abstract final class AppStrings {
 
   static String daysFromPurchase(int days) => '산 날짜로부터 $days일';
 
+  static const quickAddTitle = '빠른 입력';
+  static const addIngredientOneByOne = '하나씩 담기';
+  static const quickAddHint = '한 줄에 하나씩 적어 주세요\n예: 우유 2L 냉장\n두부 1모';
+  static const quickAddParse = '미리보기';
+  static const quickAddEmpty = '적은 재료가 없습니다';
+  static const quickAddReviewHint = '내용을 확인하고 필요하면 고친 뒤 담아 주세요';
+  static const quickAddUnrecognizedAmount = '수량을 확인해 주세요';
+  static const quickAddBack = '다시 쓰기';
+  static const quickAddSaveAll = '모두 담기';
+  static String quickAddSavedCount(int count) => '재료 $count개를 담았습니다';
+
   static const storageFridge = '냉장';
   static const storageFreezer = '냉동';
   static const storagePantry = '실온';

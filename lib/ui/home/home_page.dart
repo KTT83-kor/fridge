@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
@@ -7,6 +9,9 @@ import 'package:fridge/ui/home/bloc/home_bloc.dart';
 import 'package:fridge/ui/home/widget/empty_ingredient_view.dart';
 import 'package:fridge/ui/home/widget/ingredient_list.dart';
 import 'package:fridge/ui/home/widget/load_failed_view.dart';
+import 'package:fridge/ui/quick_add/quick_add_page.dart';
+
+enum _AddIngredientAction { quickAdd, oneByOne }
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -27,6 +32,15 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> openQuickAdd() async {
+      final messenger = ScaffoldMessenger.of(context);
+      final saved = await Navigator.of(context).push(QuickAddPage.route());
+      if (saved != true) return;
+
+      const snackBar = SnackBar(content: Text(AppStrings.ingredientSaved));
+      messenger.showSnackBar(snackBar);
+    }
+
     Future<void> openAddIngredient() async {
       final messenger = ScaffoldMessenger.of(context);
       final saved = await Navigator.of(context).push(AddIngredientPage.route());
@@ -36,15 +50,43 @@ class _HomeView extends StatelessWidget {
       messenger.showSnackBar(snackBar);
     }
 
+    void handleAction(_AddIngredientAction action) {
+      switch (action) {
+        case _AddIngredientAction.quickAdd:
+          unawaited(openQuickAdd());
+        case _AddIngredientAction.oneByOne:
+          unawaited(openAddIngredient());
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.appTitle)),
       body: const _HomeBody(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: openAddIngredient,
-        icon: const Icon(Icons.add),
-        label: const Text(AppStrings.addIngredient),
+      floatingActionButton: PopupMenuButton<_AddIngredientAction>(
+        onSelected: handleAction,
+        itemBuilder: _buildMenuItems,
+        child: const FloatingActionButton.extended(
+          onPressed: null,
+          icon: Icon(Icons.add),
+          label: Text(AppStrings.addIngredient),
+        ),
       ),
     );
+  }
+
+  List<PopupMenuEntry<_AddIngredientAction>> _buildMenuItems(
+    BuildContext context,
+  ) {
+    return const [
+      PopupMenuItem(
+        value: _AddIngredientAction.quickAdd,
+        child: Text(AppStrings.quickAddTitle),
+      ),
+      PopupMenuItem(
+        value: _AddIngredientAction.oneByOne,
+        child: Text(AppStrings.addIngredientOneByOne),
+      ),
+    ];
   }
 }
 
