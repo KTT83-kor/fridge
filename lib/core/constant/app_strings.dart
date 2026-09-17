@@ -12,6 +12,28 @@ abstract final class AppStrings {
 
   static const dDay = 'D-DAY';
 
+  static const addIngredientTitle = '재료 담기';
+  static const ingredientName = '재료 이름';
+  static const ingredientNameHint = '예: 우유';
+  static const ingredientNameRequired = '재료 이름을 입력해 주세요';
+  static const ingredientAmount = '수량';
+  static const ingredientAmountHint = '예: 1';
+  static const ingredientAmountRequired = '0보다 큰 수량을 입력해 주세요';
+  static const ingredientUnit = '단위';
+  static const storagePlaceLabel = '보관 장소';
+  static const purchasedAtLabel = '산 날짜';
+  static const expiresAtLabel = '소진 기한';
+  static const expiryFromTable = '보관기간 표에서 채웠습니다';
+  static const expiryFromDefault = '표에 없어 기본값으로 채웠습니다';
+  static const expiryManual = '직접 고른 날짜입니다';
+  static const expiryResetToTable = '자동으로 되돌리기';
+  static const save = '담기';
+  static const defaultUnit = '개';
+  static const ingredientSaved = '재료를 담았습니다';
+  static const removedIngredient = '재료를 뺐습니다';
+
+  static String daysFromPurchase(int days) => '산 날짜로부터 $days일';
+
   static const storageFridge = '냉장';
   static const storageFreezer = '냉동';
   static const storagePantry = '실온';

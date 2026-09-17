@@ -12,7 +12,7 @@ class IngredientLocalDataSource {
 
   List<IngredientDto> readAll() {
     final raw = _preferences.getString(_storageKey);
-    if (raw == null) return const [];
+    if (raw == null) return [];
 
     final decoded = jsonDecode(raw) as List<dynamic>;
     final dtos = decoded

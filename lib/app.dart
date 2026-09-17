@@ -4,17 +4,30 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/theme/app_theme.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
+import 'package:fridge/domain/repository/shelf_life_repository.dart';
 import 'package:fridge/ui/home/home_page.dart';
 
 class FridgeApp extends StatelessWidget {
-  const FridgeApp({required this.ingredientRepository, super.key});
+  const FridgeApp({
+    required this.ingredientRepository,
+    required this.shelfLifeRepository,
+    super.key,
+  });
 
   final IngredientRepository ingredientRepository;
+  final ShelfLifeRepository shelfLifeRepository;
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<IngredientRepository>.value(
-      value: ingredientRepository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<IngredientRepository>.value(
+          value: ingredientRepository,
+        ),
+        RepositoryProvider<ShelfLifeRepository>.value(
+          value: shelfLifeRepository,
+        ),
+      ],
       child: MaterialApp(
         title: AppStrings.appTitle,
         theme: AppTheme.light,

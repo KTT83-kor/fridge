@@ -28,14 +28,56 @@ class IngredientTile extends StatelessWidget {
     final subtitle =
         '$amountLabel${ingredient.unit} · ${ingredient.storagePlace.label}';
 
-    return ListTile(
-      leading: _DDayBadge(daysLeft: daysLeft, color: freshnessColor),
-      title: Text(ingredient.name),
-      subtitle: Text(subtitle),
-      trailing: IconButton(
-        onPressed: onRemoved,
-        icon: const Icon(Icons.close),
-        tooltip: AppStrings.removeIngredient,
+    void handleDismissed(DismissDirection direction) {
+      onRemoved();
+    }
+
+    return Dismissible(
+      key: ValueKey(ingredient.id),
+      background: const _RemoveBackground(alignment: Alignment.centerLeft),
+      secondaryBackground: const _RemoveBackground(
+        alignment: Alignment.centerRight,
+      ),
+      onDismissed: handleDismissed,
+      child: ListTile(
+        leading: _DDayBadge(daysLeft: daysLeft, color: freshnessColor),
+        title: Text(ingredient.name),
+        subtitle: Text(subtitle),
+      ),
+    );
+  }
+}
+
+class _RemoveBackground extends StatelessWidget {
+  const _RemoveBackground({required this.alignment});
+
+  final Alignment alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ColoredBox(
+      color: colorScheme.errorContainer,
+      child: Align(
+        alignment: alignment,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.delete_outline,
+                color: colorScheme.onErrorContainer,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                AppStrings.removeIngredient,
+                style: TextStyle(color: colorScheme.onErrorContainer),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

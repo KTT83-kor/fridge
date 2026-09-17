@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
+import 'package:fridge/ui/add_ingredient/add_ingredient_page.dart';
 import 'package:fridge/ui/home/bloc/home_bloc.dart';
 import 'package:fridge/ui/home/widget/empty_ingredient_view.dart';
 import 'package:fridge/ui/home/widget/ingredient_list.dart';
@@ -26,13 +27,22 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> openAddIngredient() async {
+      final messenger = ScaffoldMessenger.of(context);
+      final saved = await Navigator.of(context).push(AddIngredientPage.route());
+      if (saved != true) return;
+
+      const snackBar = SnackBar(content: Text(AppStrings.ingredientSaved));
+      messenger.showSnackBar(snackBar);
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.appTitle)),
       body: const _HomeBody(),
-      floatingActionButton: const FloatingActionButton.extended(
-        onPressed: null,
-        icon: Icon(Icons.add),
-        label: Text(AppStrings.addIngredient),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: openAddIngredient,
+        icon: const Icon(Icons.add),
+        label: const Text(AppStrings.addIngredient),
       ),
     );
   }
