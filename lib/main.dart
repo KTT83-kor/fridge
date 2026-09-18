@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fridge/app.dart';
 import 'package:fridge/data/datasource/gemini_menu_data_source.dart';
+import 'package:fridge/data/datasource/gemini_receipt_data_source.dart';
 import 'package:fridge/data/datasource/ingredient_local_data_source.dart';
 import 'package:fridge/data/repository/ingredient_repository_impl.dart';
 import 'package:fridge/data/repository/menu_suggestion_repository_impl.dart';
+import 'package:fridge/data/repository/receipt_parsing_repository_impl.dart';
 import 'package:fridge/data/repository/shelf_life_repository_impl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,9 +23,16 @@ Future<void> main() async {
   const shelfLifeRepository = ShelfLifeRepositoryImpl();
 
   final geminiApiKey = dotenv.maybeGet('GEMINI_API_KEY') ?? '';
-  final geminiDataSource = GeminiMenuDataSource(apiKey: geminiApiKey);
+  final geminiMenuDataSource = GeminiMenuDataSource(apiKey: geminiApiKey);
   final menuSuggestionRepository = MenuSuggestionRepositoryImpl(
-    geminiDataSource,
+    geminiMenuDataSource,
+  );
+
+  final geminiReceiptDataSource = GeminiReceiptDataSource(
+    apiKey: geminiApiKey,
+  );
+  final receiptParsingRepository = ReceiptParsingRepositoryImpl(
+    geminiReceiptDataSource,
   );
 
   runApp(
@@ -31,6 +40,7 @@ Future<void> main() async {
       ingredientRepository: ingredientRepository,
       shelfLifeRepository: shelfLifeRepository,
       menuSuggestionRepository: menuSuggestionRepository,
+      receiptParsingRepository: receiptParsingRepository,
     ),
   );
 }

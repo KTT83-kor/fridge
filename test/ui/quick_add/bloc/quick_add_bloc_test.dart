@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fridge/core/result/result.dart';
 import 'package:fridge/data/repository/shelf_life_repository_impl.dart';
 import 'package:fridge/domain/entity/ingredient.dart';
+import 'package:fridge/domain/entity/parsed_ingredient.dart';
 import 'package:fridge/domain/entity/storage_place.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
+import 'package:fridge/domain/repository/receipt_parsing_repository.dart';
 import 'package:fridge/ui/quick_add/bloc/quick_add_bloc.dart';
 
 class _RecordingIngredientRepository implements IngredientRepository {
@@ -26,20 +30,34 @@ class _RecordingIngredientRepository implements IngredientRepository {
   }
 }
 
+class _StubReceiptParsingRepository implements ReceiptParsingRepository {
+  Result<List<ParsedIngredient>> parseResult = const ResultSuccess([]);
+
+  @override
+  Future<Result<List<ParsedIngredient>>> parseImage(
+    Uint8List imageBytes,
+  ) async {
+    return parseResult;
+  }
+}
+
 void main() {
   final today = DateTime(2026, 9, 17);
   late _RecordingIngredientRepository ingredientRepository;
+  late _StubReceiptParsingRepository receiptParsingRepository;
 
   QuickAddBloc buildBloc() {
     return QuickAddBloc(
       ingredientRepository: ingredientRepository,
       shelfLifeRepository: const ShelfLifeRepositoryImpl(),
+      receiptParsingRepository: receiptParsingRepository,
       today: today,
     );
   }
 
   setUp(() {
     ingredientRepository = _RecordingIngredientRepository();
+    receiptParsingRepository = _StubReceiptParsingRepository();
   });
 
   group('파싱', () {

@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/theme/app_spacing.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
+import 'package:fridge/domain/repository/receipt_parsing_repository.dart';
 import 'package:fridge/domain/repository/shelf_life_repository.dart';
 import 'package:fridge/ui/quick_add/bloc/quick_add_bloc.dart';
 import 'package:fridge/ui/quick_add/widget/quick_add_text_field.dart';
 import 'package:fridge/ui/quick_add/widget/quick_ingredient_review_list.dart';
+import 'package:fridge/ui/quick_add/widget/receipt_scan_button.dart';
 
 class QuickAddPage extends StatelessWidget {
   const QuickAddPage({super.key});
@@ -24,6 +26,7 @@ class QuickAddPage extends StatelessWidget {
     return QuickAddBloc(
       ingredientRepository: context.read<IngredientRepository>(),
       shelfLifeRepository: context.read<ShelfLifeRepository>(),
+      receiptParsingRepository: context.read<ReceiptParsingRepository>(),
       today: DateTime.now(),
     );
   }
@@ -52,6 +55,7 @@ class _QuickAddView extends StatelessWidget {
   void _handleStatus(BuildContext context, QuickAddState state) {
     switch (state.status) {
       case QuickAddStatus.editing:
+      case QuickAddStatus.parsing:
       case QuickAddStatus.reviewing:
       case QuickAddStatus.submitting:
         return;
@@ -76,6 +80,8 @@ class _QuickAddBody extends StatelessWidget {
     switch (state.status) {
       case QuickAddStatus.editing:
         return const QuickAddTextField();
+      case QuickAddStatus.parsing:
+        return const _ReceiptScanningView();
       case QuickAddStatus.reviewing:
       case QuickAddStatus.submitting:
       case QuickAddStatus.success:
@@ -85,6 +91,24 @@ class _QuickAddBody extends StatelessWidget {
           today: DateTime.now(),
         );
     }
+  }
+}
+
+class _ReceiptScanningView extends StatelessWidget {
+  const _ReceiptScanningView();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: AppSpacing.md),
+          Text(AppStrings.quickAddScanning),
+        ],
+      ),
+    );
   }
 }
 
@@ -100,6 +124,8 @@ class _BottomBar extends StatelessWidget {
     switch (state.status) {
       case QuickAddStatus.editing:
         return _ParseButton(canParse: state.canParse);
+      case QuickAddStatus.parsing:
+        return const SizedBox.shrink();
       case QuickAddStatus.reviewing:
       case QuickAddStatus.submitting:
       case QuickAddStatus.success:
@@ -124,12 +150,19 @@ class _ParseButton extends StatelessWidget {
 
     return SafeArea(
       minimum: const EdgeInsets.all(AppSpacing.md),
-      child: FilledButton(
-        onPressed: onPressed,
-        style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(AppSpacing.xl * 1.5),
-        ),
-        child: const Text(AppStrings.quickAddParse),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ReceiptScanButton(),
+          const SizedBox(height: AppSpacing.sm),
+          FilledButton(
+            onPressed: onPressed,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(AppSpacing.xl * 1.5),
+            ),
+            child: const Text(AppStrings.quickAddParse),
+          ),
+        ],
       ),
     );
   }

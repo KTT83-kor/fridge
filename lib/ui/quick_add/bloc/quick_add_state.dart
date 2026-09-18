@@ -1,6 +1,13 @@
 part of 'quick_add_bloc.dart';
 
-enum QuickAddStatus { editing, reviewing, submitting, success, failure }
+enum QuickAddStatus {
+  editing,
+  parsing,
+  reviewing,
+  submitting,
+  success,
+  failure,
+}
 
 final class QuickAddState extends Equatable {
   const QuickAddState({

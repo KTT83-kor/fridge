@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
@@ -6,6 +8,7 @@ import 'package:fridge/domain/entity/ingredient.dart';
 import 'package:fridge/domain/entity/parsed_ingredient.dart';
 import 'package:fridge/domain/entity/storage_place.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
+import 'package:fridge/domain/repository/receipt_parsing_repository.dart';
 import 'package:fridge/domain/repository/shelf_life_repository.dart';
 import 'package:fridge/domain/usecase/parse_ingredient_lines.dart';
 import 'package:fridge/domain/usecase/suggest_expiry_date.dart';
@@ -19,11 +22,13 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
   QuickAddBloc({
     required IngredientRepository ingredientRepository,
     required ShelfLifeRepository shelfLifeRepository,
+    required ReceiptParsingRepository receiptParsingRepository,
     required DateTime today,
     ParseIngredientLines parseLines = const ParseIngredientLines(),
     Uuid uuid = const Uuid(),
   }) : _ingredientRepository = ingredientRepository,
        _shelfLifeRepository = shelfLifeRepository,
+       _receiptParsingRepository = receiptParsingRepository,
        _suggestExpiryDate = SuggestExpiryDate(shelfLifeRepository),
        _parseLines = parseLines,
        _today = _atStartOfDay(today),
@@ -31,6 +36,8 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
        super(const QuickAddState()) {
     on<QuickAddTextChanged>(_onTextChanged);
     on<QuickAddParsed>(_onParsed);
+    on<QuickAddReceiptImagePicked>(_onReceiptImagePicked);
+    on<QuickAddReceiptParsed>(_onReceiptParsed);
     on<QuickAddDraftNameChanged>(_onDraftNameChanged);
     on<QuickAddDraftAmountChanged>(_onDraftAmountChanged);
     on<QuickAddDraftUnitChanged>(_onDraftUnitChanged);
@@ -45,6 +52,7 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
 
   final IngredientRepository _ingredientRepository;
   final ShelfLifeRepository _shelfLifeRepository;
+  final ReceiptParsingRepository _receiptParsingRepository;
   final SuggestExpiryDate _suggestExpiryDate;
   final ParseIngredientLines _parseLines;
   final DateTime _today;
@@ -58,6 +66,43 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
     final parsedLines = _parseLines(state.text);
     final drafts = parsedLines.map(_toDraft).toList();
     emit(state.copyWith(drafts: drafts, status: QuickAddStatus.reviewing));
+  }
+
+  Future<void> _onReceiptImagePicked(
+    QuickAddReceiptImagePicked event,
+    Emitter<QuickAddState> emit,
+  ) async {
+    emit(state.copyWith(status: QuickAddStatus.parsing));
+    final result = await _receiptParsingRepository.parseImage(
+      event.imageBytes,
+    );
+    add(QuickAddReceiptParsed(result));
+  }
+
+  void _onReceiptParsed(
+    QuickAddReceiptParsed event,
+    Emitter<QuickAddState> emit,
+  ) {
+    switch (event.result) {
+      case ResultSuccess<List<ParsedIngredient>>(:final value):
+        final drafts = value.map(_toDraft).toList();
+        if (drafts.isEmpty) {
+          emit(
+            state.copyWith(
+              status: QuickAddStatus.failure,
+              errorMessage: AppStrings.quickAddReceiptEmpty,
+            ),
+          );
+          return;
+        }
+        emit(
+          state.copyWith(drafts: drafts, status: QuickAddStatus.reviewing),
+        );
+      case ResultFailure<List<ParsedIngredient>>(:final message):
+        emit(
+          state.copyWith(status: QuickAddStatus.failure, errorMessage: message),
+        );
+    }
   }
 
   void _onDraftNameChanged(

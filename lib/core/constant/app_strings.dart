@@ -45,6 +45,17 @@ abstract final class AppStrings {
   static const quickAddSaveAll = '모두 담기';
   static String quickAddSavedCount(int count) => '재료 $count개를 담았습니다';
 
+  static const quickAddScanReceipt = '영수증으로 담기';
+  static const quickAddScanning = '영수증을 읽고 있어요';
+  static const quickAddReceiptEmpty = '영수증에서 재료를 찾지 못했습니다';
+  static const quickAddReceiptFailed = '영수증을 읽지 못했습니다';
+  static const quickAddReceiptOverloaded = '지금 몰려서 안 돼요. 잠시 후 다시 시도해 주세요';
+  static const quickAddReceiptQuotaExceeded =
+      '오늘 쓸 수 있는 횟수를 다 썼어요. 내일 다시 시도해 주세요';
+  static const quickAddReceiptApiKeyMissing = 'GEMINI_API_KEY가 설정돼 있지 않습니다';
+  static String quickAddReceiptFailedWithCode(int statusCode) =>
+      '영수증을 읽지 못했습니다 (오류 코드 $statusCode)';
+
   static const storageFridge = '냉장';
   static const storageFreezer = '냉동';
   static const storagePantry = '실온';

@@ -7,6 +7,7 @@ import 'package:fridge/domain/entity/storage_place.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
 
 import '../../helper/fake_menu_suggestion_repository.dart';
+import '../../helper/fake_receipt_parsing_repository.dart';
 
 class _InMemoryIngredientRepository implements IngredientRepository {
   _InMemoryIngredientRepository(List<Ingredient> ingredients)
@@ -51,6 +52,7 @@ void main() {
         ingredientRepository: repository,
         shelfLifeRepository: const ShelfLifeRepositoryImpl(),
         menuSuggestionRepository: FakeMenuSuggestionRepository(),
+        receiptParsingRepository: FakeReceiptParsingRepository(),
       ),
     );
     await tester.pumpAndSettle();
