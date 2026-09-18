@@ -7,6 +7,8 @@ import 'package:fridge/data/repository/shelf_life_repository_impl.dart';
 import 'package:fridge/domain/entity/ingredient.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
 
+import '../../helper/fake_menu_suggestion_repository.dart';
+
 class _EmptyIngredientRepository implements IngredientRepository {
   @override
   Stream<List<Ingredient>> watchAll() => Stream.value(const []);
@@ -30,6 +32,7 @@ void main() {
       FridgeApp(
         ingredientRepository: repository,
         shelfLifeRepository: const ShelfLifeRepositoryImpl(),
+        menuSuggestionRepository: FakeMenuSuggestionRepository(),
       ),
     );
     await tester.pumpAndSettle();
@@ -48,6 +51,7 @@ void main() {
       FridgeApp(
         ingredientRepository: repository,
         shelfLifeRepository: const ShelfLifeRepositoryImpl(),
+        menuSuggestionRepository: FakeMenuSuggestionRepository(),
       ),
     );
     await tester.pumpAndSettle();
@@ -67,6 +71,7 @@ void main() {
       FridgeApp(
         ingredientRepository: repository,
         shelfLifeRepository: const ShelfLifeRepositoryImpl(),
+        menuSuggestionRepository: FakeMenuSuggestionRepository(),
       ),
     );
     await tester.pumpAndSettle();

@@ -53,4 +53,12 @@ abstract final class AppStrings {
   static const freshnessUrgent = '오늘내일';
   static const freshnessSoon = '곧 소진';
   static const freshnessFresh = '넉넉함';
+
+  static const menuSuggestionTitle = '메뉴 추천';
+  static const menuSuggestionEmpty = '냉장고에 재료가 없어 추천할 수 없습니다';
+  static const menuSuggestionLoading = '냉장고 속 재료로 메뉴를 고르고 있어요';
+  static const menuSuggestionFailed = '메뉴를 추천받지 못했습니다';
+  static const menuSuggestionApiKeyMissing = 'GEMINI_API_KEY가 설정돼 있지 않습니다';
+  static const menuSuggestionUsedIngredients = '사용하는 재료';
+  static const menuSuggestionRetry = '다시 추천받기';
 }

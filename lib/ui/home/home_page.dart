@@ -9,6 +9,7 @@ import 'package:fridge/ui/home/bloc/home_bloc.dart';
 import 'package:fridge/ui/home/widget/empty_ingredient_view.dart';
 import 'package:fridge/ui/home/widget/ingredient_list.dart';
 import 'package:fridge/ui/home/widget/load_failed_view.dart';
+import 'package:fridge/ui/menu_suggestion/menu_suggestion_page.dart';
 import 'package:fridge/ui/quick_add/quick_add_page.dart';
 
 enum _AddIngredientAction { quickAdd, oneByOne }
@@ -59,8 +60,21 @@ class _HomeView extends StatelessWidget {
       }
     }
 
+    void openMenuSuggestion() {
+      unawaited(Navigator.of(context).push(MenuSuggestionPage.route()));
+    }
+
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.appTitle)),
+      appBar: AppBar(
+        title: const Text(AppStrings.appTitle),
+        actions: [
+          IconButton(
+            onPressed: openMenuSuggestion,
+            icon: const Icon(Icons.restaurant_menu),
+            tooltip: AppStrings.menuSuggestionTitle,
+          ),
+        ],
+      ),
       body: const _HomeBody(),
       floatingActionButton: PopupMenuButton<_AddIngredientAction>(
         onSelected: handleAction,

@@ -62,6 +62,12 @@ Firestore 구현으로 갈아끼울 때 `ui`는 건드리지 않는다.
 `soon`으로 본다. 기준일은 항상 파라미터로 받는다 — `DateTime.now()`를 도메인 안에서
 부르지 않아야 테스트가 고정된다.
 
+**GEMINI_API_KEY는 개발 머신에서만 읽힌다**: `main.dart`가 `dart:io`로 프로젝트
+루트의 `.env`를 직접 읽는다(`env.example` 참고). `flutter run -d R8YX81EYL0X`처럼
+이 저장소가 있는 머신에서 띄울 때만 통하고, `flutter install`로 태블릿에 독립
+설치하면 그 파일이 없어서 키가 비어 메뉴 추천이 실패한다. 독립 설치가 필요해지면
+`--dart-define=GEMINI_API_KEY=xxx`로 빌드 시점에 주입하는 방식으로 바꿔야 한다.
+
 ## 자주 쓰는 명령어
 
 ```bash

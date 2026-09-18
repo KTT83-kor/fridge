@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/theme/app_theme.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
+import 'package:fridge/domain/repository/menu_suggestion_repository.dart';
 import 'package:fridge/domain/repository/shelf_life_repository.dart';
 import 'package:fridge/ui/home/home_page.dart';
 
@@ -11,11 +12,13 @@ class FridgeApp extends StatelessWidget {
   const FridgeApp({
     required this.ingredientRepository,
     required this.shelfLifeRepository,
+    required this.menuSuggestionRepository,
     super.key,
   });
 
   final IngredientRepository ingredientRepository;
   final ShelfLifeRepository shelfLifeRepository;
+  final MenuSuggestionRepository menuSuggestionRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,9 @@ class FridgeApp extends StatelessWidget {
         ),
         RepositoryProvider<ShelfLifeRepository>.value(
           value: shelfLifeRepository,
+        ),
+        RepositoryProvider<MenuSuggestionRepository>.value(
+          value: menuSuggestionRepository,
         ),
       ],
       child: MaterialApp(
