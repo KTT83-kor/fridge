@@ -44,5 +44,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# 환경 변수 (API 키)
+# 환경 변수 (API 키). env.example에 실제 키를 적어서 쓴다 — 안드로이드
+# asset으로 번들해야 기기에서 읽히므로 .env가 아니라 이 이름을 쓴다.
+# .env는 이제 앱이 읽지 않지만 혹시 남아 있어도 커밋되지 않게 막는다.
 .env
+env.example
+!env.example.template

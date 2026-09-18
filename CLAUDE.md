@@ -62,11 +62,29 @@ Firestore 구현으로 갈아끼울 때 `ui`는 건드리지 않는다.
 `soon`으로 본다. 기준일은 항상 파라미터로 받는다 — `DateTime.now()`를 도메인 안에서
 부르지 않아야 테스트가 고정된다.
 
-**GEMINI_API_KEY는 개발 머신에서만 읽힌다**: `main.dart`가 `dart:io`로 프로젝트
-루트의 `.env`를 직접 읽는다(`env.example` 참고). `flutter run -d R8YX81EYL0X`처럼
-이 저장소가 있는 머신에서 띄울 때만 통하고, `flutter install`로 태블릿에 독립
-설치하면 그 파일이 없어서 키가 비어 메뉴 추천이 실패한다. 독립 설치가 필요해지면
-`--dart-define=GEMINI_API_KEY=xxx`로 빌드 시점에 주입하는 방식으로 바꿔야 한다.
+**GEMINI_API_KEY는 env.example에 실제 키를 적어서 쓴다**: `pubspec.yaml`
+assets에 `env.example`이 등록돼 있고 `main.dart`가 `dotenv.load(fileName:
+'env.example')`로 읽는다. 파일명이 이상해 보이지만 이유가 있다 — 안드로이드
+기기에 설치된 앱은 `dart:io`로 개발 머신의 파일을 못 읽는다(그 경로는 기기
+샌드박스를 가리킨다). asset 번들만이 기기까지 값을 들고 간다. 그런데 asset은
+빌드 시점에 존재하는 파일만 등록할 수 있어서 `.env`처럼 있다 없다 하는 이름을
+쓰면 그 파일이 없을 때 `flutter build`/`test` 자체가 깨진다. 그래서 `.env`
+대신 `env.example`이라는, 원래는 "예시"라는 뜻이지만 실제로 항상 존재하게
+만든 파일 이름을 그대로 실사용 키 저장소로 쓴다. `env.example`은
+`.gitignore`에 걸려 있어 실제 키가 커밋되지 않는다 — 커밋되는 빈 템플릿은
+`env.example.template`이다. 처음 셋업할 때 이 템플릿을 `env.example`로
+복사해서 키를 채운다. `.env`라는 파일은 더 이상 쓰지 않는다.
+
+`pubspec.yaml`의 `assets` 목록을 고친 뒤에는 `flutter clean`을 한 번 돌리고
+빌드해야 한다 — 안 그러면 캐시된 애셋 매니페스트가 그대로 남아 새로 추가한
+파일이 apk에 안 들어간다. `unzip -l build/app/outputs/flutter-apk/app-debug.apk
+| grep env.example`로 실제로 번들됐는지 확인할 수 있다.
+
+**Gemini 모델명은 자주 바뀐다**: `gemini-2.5-flash`가 신규 사용자에게 단종돼
+그 이름으로 요청하면 404가 난다. 지금은 `gemini-3.6-flash`를 쓴다
+(`GeminiMenuDataSource._model`). 메뉴 추천이 원인 불명으로 실패하면 먼저
+`curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/$MODEL:generateContent?key=$KEY" ...`
+로 모델명이 아직 유효한지부터 확인해라.
 
 ## 자주 쓰는 명령어
 

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fridge/app.dart';
@@ -37,16 +35,10 @@ Future<void> main() async {
   );
 }
 
-/// 태블릿 개발 환경의 프로젝트 루트에 있는 .env 파일을 읽는다.
-/// 배포용 asset이 아니라 dart:io로 직접 읽어서, .env가 아직 없어도
-/// 빌드 자체는 막히지 않는다.
+/// env.example을 asset으로 읽는다. dart:io로 프로젝트 루트 파일을 읽는
+/// 방식은 기기에 설치된 앱에서는 그 경로가 기기 안 샌드박스를 가리켜
+/// 동작하지 않는다 — asset 번들이 유일하게 기기까지 따라가는 경로다.
+/// env.example은 항상 커밋돼 있어 파일이 없어서 빌드가 깨질 일이 없다.
 Future<void> _loadEnv() async {
-  final envFile = File('.env');
-  if (!envFile.existsSync()) {
-    dotenv.loadFromString(isOptional: true);
-    return;
-  }
-
-  final envString = await envFile.readAsString();
-  dotenv.loadFromString(envString: envString, isOptional: true);
+  await dotenv.load(fileName: 'env.example', isOptional: true);
 }

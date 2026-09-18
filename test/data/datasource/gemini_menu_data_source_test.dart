@@ -116,19 +116,60 @@ void main() {
     expect(capturedUri.queryParameters['key'], 'my-key');
   });
 
-  test('상태 코드가 200이 아니면 예외를 던진다', () async {
+  test('재시도 대상이 아닌 오류는 바로 예외를 던진다', () async {
+    var requestCount = 0;
     final client = MockClient((request) async {
-      return buildJsonResponse('오류', statusCode: 429);
+      requestCount++;
+      return buildJsonResponse('오류', statusCode: 400);
     });
     final dataSource = GeminiMenuDataSource(
       apiKey: 'test-key',
       client: client,
     );
 
-    expect(
+    await expectLater(
       () => dataSource.generateMenuSuggestions([milk]),
       throwsA(isA<GeminiRequestException>()),
     );
+    expect(requestCount, 1);
+  });
+
+  test('503은 재시도하다가 성공하면 결과를 돌려준다', () async {
+    var requestCount = 0;
+    final client = MockClient((request) async {
+      requestCount++;
+      if (requestCount < 3) return buildJsonResponse('과부하', statusCode: 503);
+      return buildJsonResponse(jsonEncode(buildGeminiResponse('[]')));
+    });
+    final dataSource = GeminiMenuDataSource(
+      apiKey: 'test-key',
+      client: client,
+      retryDelay: Duration.zero,
+    );
+
+    final result = await dataSource.generateMenuSuggestions([milk]);
+
+    expect(result, '[]');
+    expect(requestCount, 3);
+  });
+
+  test('429가 재시도 횟수를 넘게 계속되면 결국 예외를 던진다', () async {
+    var requestCount = 0;
+    final client = MockClient((request) async {
+      requestCount++;
+      return buildJsonResponse('쿼터 초과', statusCode: 429);
+    });
+    final dataSource = GeminiMenuDataSource(
+      apiKey: 'test-key',
+      client: client,
+      retryDelay: Duration.zero,
+    );
+
+    await expectLater(
+      () => dataSource.generateMenuSuggestions([milk]),
+      throwsA(isA<GeminiRequestException>()),
+    );
+    expect(requestCount, 3);
   });
 
   test('API 키가 비어 있으면 요청 없이 예외를 던진다', () async {
