@@ -49,7 +49,11 @@ void main() {
     http.Client client, {
     String apiKey = 'test-key',
   }) {
-    final dataSource = GeminiMenuDataSource(apiKey: apiKey, client: client);
+    final dataSource = GeminiMenuDataSource(
+      apiKey: apiKey,
+      client: client,
+      retryDelay: Duration.zero,
+    );
     return MenuSuggestionRepositoryImpl(dataSource);
   }
 
@@ -128,5 +132,41 @@ void main() {
     expect(result, isA<ResultFailure<List<MenuSuggestion>>>());
     final failure = result as ResultFailure<List<MenuSuggestion>>;
     expect(failure.message, AppStrings.menuSuggestionApiKeyMissing);
+  });
+
+  test('503이면 과부하 전용 메시지로 실패를 돌려준다', () async {
+    final client = MockClient((request) async {
+      return buildJsonResponse('과부하', statusCode: 503);
+    });
+    final repository = buildRepository(client);
+
+    final result = await repository.suggestForOneMeal([tofu]);
+
+    final failure = result as ResultFailure<List<MenuSuggestion>>;
+    expect(failure.message, AppStrings.menuSuggestionOverloaded);
+  });
+
+  test('429면 쿼터 초과 전용 메시지로 실패를 돌려준다', () async {
+    final client = MockClient((request) async {
+      return buildJsonResponse('쿼터 초과', statusCode: 429);
+    });
+    final repository = buildRepository(client);
+
+    final result = await repository.suggestForOneMeal([tofu]);
+
+    final failure = result as ResultFailure<List<MenuSuggestion>>;
+    expect(failure.message, AppStrings.menuSuggestionQuotaExceeded);
+  });
+
+  test('그 외 오류는 상태 코드를 담은 메시지로 실패를 돌려준다', () async {
+    final client = MockClient((request) async {
+      return buildJsonResponse('서버 오류', statusCode: 500);
+    });
+    final repository = buildRepository(client);
+
+    final result = await repository.suggestForOneMeal([tofu]);
+
+    final failure = result as ResultFailure<List<MenuSuggestion>>;
+    expect(failure.message, AppStrings.menuSuggestionFailedWithCode(500));
   });
 }

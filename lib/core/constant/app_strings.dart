@@ -58,7 +58,12 @@ abstract final class AppStrings {
   static const menuSuggestionEmpty = '냉장고에 재료가 없어 추천할 수 없습니다';
   static const menuSuggestionLoading = '냉장고 속 재료로 메뉴를 고르고 있어요';
   static const menuSuggestionFailed = '메뉴를 추천받지 못했습니다';
+  static const menuSuggestionOverloaded = '지금 몰려서 안 돼요. 잠시 후 다시 시도해 주세요';
+  static const menuSuggestionQuotaExceeded =
+      '오늘 쓸 수 있는 횟수를 다 썼어요. 내일 다시 시도해 주세요';
   static const menuSuggestionApiKeyMissing = 'GEMINI_API_KEY가 설정돼 있지 않습니다';
+  static String menuSuggestionFailedWithCode(int statusCode) =>
+      '메뉴를 추천받지 못했습니다 (오류 코드 $statusCode)';
   static const menuSuggestionUsedIngredients = '사용하는 재료';
   static const menuSuggestionRetry = '다시 추천받기';
 }

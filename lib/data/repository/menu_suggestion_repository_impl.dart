@@ -27,8 +27,21 @@ class MenuSuggestionRepositoryImpl implements MenuSuggestionRepository {
         AppStrings.menuSuggestionApiKeyMissing,
         cause: error,
       );
+    } on GeminiRequestException catch (error) {
+      return ResultFailure(_messageFor(error), cause: error);
     } on Exception catch (error) {
       return ResultFailure(AppStrings.menuSuggestionFailed, cause: error);
+    }
+  }
+
+  String _messageFor(GeminiRequestException error) {
+    switch (error.statusCode) {
+      case 503:
+        return AppStrings.menuSuggestionOverloaded;
+      case 429:
+        return AppStrings.menuSuggestionQuotaExceeded;
+      default:
+        return AppStrings.menuSuggestionFailedWithCode(error.statusCode);
     }
   }
 
