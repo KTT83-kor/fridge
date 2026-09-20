@@ -100,6 +100,7 @@ void main() {
       name: '두부조림',
       description: '두부로 만드는 조림',
       usedIngredientNames: ['두부'],
+      steps: ['두부를 썬다', '조린다'],
     );
     final ingredientRepository = _FakeIngredientRepository([tofu]);
     final menuSuggestionRepository = FakeMenuSuggestionRepository(

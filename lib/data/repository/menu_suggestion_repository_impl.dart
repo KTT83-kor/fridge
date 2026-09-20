@@ -55,11 +55,15 @@ class MenuSuggestionRepositoryImpl implements MenuSuggestionRepository {
     final usedIngredientNames = (map['usedIngredientNames'] as List<dynamic>)
         .map((name) => name as String)
         .toList();
+    final steps = (map['steps'] as List<dynamic>)
+        .map((step) => step as String)
+        .toList();
 
     return MenuSuggestion(
       name: map['name'] as String,
       description: map['description'] as String,
       usedIngredientNames: usedIngredientNames,
+      steps: steps,
     );
   }
 }

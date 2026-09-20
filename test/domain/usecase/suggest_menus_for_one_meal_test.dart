@@ -60,6 +60,7 @@ void main() {
       name: '두부조림',
       description: '두부와 양파로 만드는 조림',
       usedIngredientNames: ['두부', '양파'],
+      steps: ['두부와 양파를 썬다', '양념을 넣고 조린다'],
     );
     repository.result = const ResultSuccess([suggestion]);
     final usecase = SuggestMenusForOneMeal(repository);

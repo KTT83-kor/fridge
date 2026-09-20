@@ -59,7 +59,8 @@ class GeminiMenuDataSource {
     final prompt =
         '아래는 냉장고에 있는 재료 목록이다. 소진 임박 순으로 정렬돼 있으니 '
         '앞쪽 재료를 우선 사용해서 한 끼 메뉴를 $_suggestionCount개 추천해라. '
-        '목록에 없는 재료는 쓰지 마라.\n\n$ingredientLines';
+        '목록에 없는 재료는 쓰지 마라. 메뉴마다 조리 순서를 단계별로 '
+        '나눠서 알려줘라.\n\n$ingredientLines';
 
     return {
       'contents': [
@@ -82,8 +83,17 @@ class GeminiMenuDataSource {
                 'type': 'ARRAY',
                 'items': {'type': 'STRING'},
               },
+              'steps': {
+                'type': 'ARRAY',
+                'items': {'type': 'STRING'},
+              },
             },
-            'required': ['name', 'description', 'usedIngredientNames'],
+            'required': [
+              'name',
+              'description',
+              'usedIngredientNames',
+              'steps',
+            ],
           },
         },
       },

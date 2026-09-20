@@ -63,6 +63,7 @@ void main() {
         'name': '두부조림',
         'description': '두부로 만드는 조림',
         'usedIngredientNames': ['두부'],
+        'steps': ['두부를 썬다', '조린다'],
       },
     ]);
     final client = MockClient((request) async {
@@ -82,8 +83,18 @@ void main() {
 
   test('여러 메뉴를 순서대로 담는다', () async {
     final suggestionsJson = jsonEncode([
-      {'name': '메뉴1', 'description': '설명1', 'usedIngredientNames': ['두부']},
-      {'name': '메뉴2', 'description': '설명2', 'usedIngredientNames': ['두부']},
+      {
+        'name': '메뉴1',
+        'description': '설명1',
+        'usedIngredientNames': ['두부'],
+        'steps': ['1단계'],
+      },
+      {
+        'name': '메뉴2',
+        'description': '설명2',
+        'usedIngredientNames': ['두부'],
+        'steps': ['1단계'],
+      },
     ]);
     final client = MockClient((request) async {
       final response = buildGeminiResponse(suggestionsJson);

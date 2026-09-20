@@ -77,4 +77,5 @@ abstract final class AppStrings {
       '메뉴를 추천받지 못했습니다 (오류 코드 $statusCode)';
   static const menuSuggestionUsedIngredients = '사용하는 재료';
   static const menuSuggestionRetry = '다시 추천받기';
+  static const menuSuggestionRecipe = '레시피 보기';
 }

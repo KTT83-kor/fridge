@@ -30,9 +30,64 @@ class MenuSuggestionCard extends StatelessWidget {
                 color: theme.colorScheme.outline,
               ),
             ),
+            const SizedBox(height: AppSpacing.sm),
+            _RecipeSteps(steps: suggestion.steps),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RecipeSteps extends StatefulWidget {
+  const _RecipeSteps({required this.steps});
+
+  final List<String> steps;
+
+  @override
+  State<_RecipeSteps> createState() => _RecipeStepsState();
+}
+
+class _RecipeStepsState extends State<_RecipeSteps> {
+  var _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    void toggleExpanded() {
+      setState(() {
+        _isExpanded = !_isExpanded;
+      });
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextButton.icon(
+          onPressed: toggleExpanded,
+          icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
+          label: const Text(AppStrings.menuSuggestionRecipe),
+          style: TextButton.styleFrom(padding: EdgeInsets.zero),
+        ),
+        if (_isExpanded) _buildStepList(context),
+      ],
+    );
+  }
+
+  Widget _buildStepList(BuildContext context) {
+    final theme = Theme.of(context);
+    final stepTexts = List.generate(widget.steps.length, (index) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+        child: Text(
+          '${index + 1}. ${widget.steps[index]}',
+          style: theme.textTheme.bodyMedium,
+        ),
+      );
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: stepTexts,
     );
   }
 }
