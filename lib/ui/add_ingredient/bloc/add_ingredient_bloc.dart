@@ -17,16 +17,13 @@ class AddIngredientBloc extends Bloc<AddIngredientEvent, AddIngredientState> {
     required IngredientRepository ingredientRepository,
     required ShelfLifeRepository shelfLifeRepository,
     required DateTime today,
+    Ingredient? initial,
     Uuid uuid = const Uuid(),
   }) : _ingredientRepository = ingredientRepository,
        _shelfLifeRepository = shelfLifeRepository,
        _suggestExpiryDate = SuggestExpiryDate(shelfLifeRepository),
-       _uuid = uuid,
        super(
-         AddIngredientState(
-           purchasedAt: _atStartOfDay(today),
-           expiresAt: _atStartOfDay(today).add(_fallbackShelfLife),
-         ),
+         _buildInitialState(today: today, initial: initial, uuid: uuid),
        ) {
     on<AddIngredientNameChanged>(_onNameChanged);
     on<AddIngredientAmountChanged>(_onAmountChanged);
@@ -43,7 +40,6 @@ class AddIngredientBloc extends Bloc<AddIngredientEvent, AddIngredientState> {
   final IngredientRepository _ingredientRepository;
   final ShelfLifeRepository _shelfLifeRepository;
   final SuggestExpiryDate _suggestExpiryDate;
-  final Uuid _uuid;
 
   void _onNameChanged(
     AddIngredientNameChanged event,
@@ -120,7 +116,7 @@ class AddIngredientBloc extends Bloc<AddIngredientEvent, AddIngredientState> {
 
     final amount = double.parse(state.amount.trim());
     final ingredient = Ingredient(
-      id: _uuid.v4(),
+      id: state.id,
       name: state.name.trim(),
       amount: amount,
       unit: state.unit,
@@ -162,5 +158,39 @@ class AddIngredientBloc extends Bloc<AddIngredientEvent, AddIngredientState> {
 
   static DateTime _atStartOfDay(DateTime dateTime) {
     return DateTime(dateTime.year, dateTime.month, dateTime.day);
+  }
+
+  static AddIngredientState _buildInitialState({
+    required DateTime today,
+    required Ingredient? initial,
+    required Uuid uuid,
+  }) {
+    if (initial == null) {
+      final purchasedAt = _atStartOfDay(today);
+      return AddIngredientState(
+        id: uuid.v4(),
+        purchasedAt: purchasedAt,
+        expiresAt: purchasedAt.add(_fallbackShelfLife),
+      );
+    }
+
+    return AddIngredientState(
+      id: initial.id,
+      isEditing: true,
+      name: initial.name,
+      amount: _formatAmount(initial.amount),
+      unit: initial.unit,
+      storagePlace: initial.storagePlace,
+      purchasedAt: initial.purchasedAt,
+      expiresAt: initial.expiresAt,
+      isExpiryManual: true,
+    );
+  }
+
+  static String _formatAmount(double amount) {
+    if (amount == amount.truncateToDouble()) {
+      return amount.truncate().toString();
+    }
+    return amount.toString();
   }
 }

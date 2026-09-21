@@ -17,9 +17,16 @@ class AddIngredientForm extends StatefulWidget {
 }
 
 class _AddIngredientFormState extends State<AddIngredientForm> {
-  final _nameController = TextEditingController();
-  final _amountController = TextEditingController();
-  final _unitController = TextEditingController(text: AppStrings.defaultUnit);
+  late final AddIngredientState _initialState = context
+      .read<AddIngredientBloc>()
+      .state;
+  late final _nameController = TextEditingController(text: _initialState.name);
+  late final _amountController = TextEditingController(
+    text: _initialState.amount,
+  );
+  late final _unitController = TextEditingController(
+    text: _initialState.unit,
+  );
 
   @override
   void dispose() {

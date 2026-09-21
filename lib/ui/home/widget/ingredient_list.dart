@@ -6,9 +6,14 @@ import 'package:fridge/ui/home/bloc/home_bloc.dart';
 import 'package:fridge/ui/home/widget/ingredient_tile.dart';
 
 class IngredientList extends StatelessWidget {
-  const IngredientList({required this.ingredients, super.key});
+  const IngredientList({
+    required this.ingredients,
+    required this.onTileTapped,
+    super.key,
+  });
 
   final List<Ingredient> ingredients;
+  final ValueChanged<Ingredient> onTileTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +29,15 @@ class IngredientList extends StatelessWidget {
           context.read<HomeBloc>().add(HomeIngredientRemoved(ingredient.id));
         }
 
+        void tapTile() {
+          onTileTapped(ingredient);
+        }
+
         return IngredientTile(
           ingredient: ingredient,
           today: today,
           onRemoved: removeIngredient,
+          onTap: tapTile,
         );
       },
     );

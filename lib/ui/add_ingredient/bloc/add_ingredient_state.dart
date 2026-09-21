@@ -4,8 +4,10 @@ enum AddIngredientStatus { editing, submitting, success, failure }
 
 final class AddIngredientState extends Equatable {
   const AddIngredientState({
+    required this.id,
     required this.purchasedAt,
     required this.expiresAt,
+    this.isEditing = false,
     this.name = '',
     this.amount = '',
     this.unit = AppStrings.defaultUnit,
@@ -16,6 +18,8 @@ final class AddIngredientState extends Equatable {
     this.errorMessage = '',
   });
 
+  final String id;
+  final bool isEditing;
   final String name;
   final String amount;
   final String unit;
@@ -54,6 +58,8 @@ final class AddIngredientState extends Equatable {
     String? errorMessage,
   }) {
     return AddIngredientState(
+      id: id,
+      isEditing: isEditing,
       name: name ?? this.name,
       amount: amount ?? this.amount,
       unit: unit ?? this.unit,
@@ -70,6 +76,8 @@ final class AddIngredientState extends Equatable {
 
   @override
   List<Object?> get props => [
+    id,
+    isEditing,
     name,
     amount,
     unit,

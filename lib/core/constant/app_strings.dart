@@ -13,6 +13,8 @@ abstract final class AppStrings {
   static const dDay = 'D-DAY';
 
   static const addIngredientTitle = '재료 담기';
+  static const editIngredientTitle = '재료 수정';
+  static const saveEdit = '수정';
   static const ingredientName = '재료 이름';
   static const ingredientNameHint = '예: 우유';
   static const ingredientNameRequired = '재료 이름을 입력해 주세요';
@@ -30,6 +32,7 @@ abstract final class AppStrings {
   static const save = '담기';
   static const defaultUnit = '개';
   static const ingredientSaved = '재료를 담았습니다';
+  static const ingredientUpdated = '재료를 수정했습니다';
   static const removedIngredient = '재료를 뺐습니다';
 
   static String daysFromPurchase(int days) => '산 날짜로부터 $days일';

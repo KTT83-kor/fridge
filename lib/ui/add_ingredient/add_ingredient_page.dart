@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/theme/app_spacing.dart';
+import 'package:fridge/domain/entity/ingredient.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
 import 'package:fridge/domain/repository/shelf_life_repository.dart';
 import 'package:fridge/ui/add_ingredient/bloc/add_ingredient_bloc.dart';
 import 'package:fridge/ui/add_ingredient/widget/add_ingredient_form.dart';
 
 class AddIngredientPage extends StatelessWidget {
-  const AddIngredientPage({super.key});
+  const AddIngredientPage({this.initial, super.key});
 
-  static Route<bool> route() {
+  final Ingredient? initial;
+
+  static Route<bool> route({Ingredient? initial}) {
     return MaterialPageRoute<bool>(
-      builder: (context) => const AddIngredientPage(),
+      builder: (context) => AddIngredientPage(initial: initial),
     );
   }
 
@@ -26,6 +29,7 @@ class AddIngredientPage extends StatelessWidget {
       ingredientRepository: context.read<IngredientRepository>(),
       shelfLifeRepository: context.read<ShelfLifeRepository>(),
       today: DateTime.now(),
+      initial: initial,
     );
   }
 }
@@ -35,11 +39,18 @@ class _AddIngredientView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = context.select(
+      (AddIngredientBloc bloc) => bloc.state.isEditing,
+    );
+    final title = isEditing
+        ? AppStrings.editIngredientTitle
+        : AppStrings.addIngredientTitle;
+
     return BlocListener<AddIngredientBloc, AddIngredientState>(
       listenWhen: _hasStatusChanged,
       listener: _handleStatus,
       child: Scaffold(
-        appBar: AppBar(title: const Text(AppStrings.addIngredientTitle)),
+        appBar: AppBar(title: Text(title)),
         body: const SafeArea(child: AddIngredientForm()),
         bottomNavigationBar: const _SaveButton(),
       ),
@@ -83,6 +94,7 @@ class _SaveButton extends StatelessWidget {
     }
 
     final onPressed = state.canSubmit ? submit : null;
+    final label = state.isEditing ? AppStrings.saveEdit : AppStrings.save;
 
     return SafeArea(
       minimum: const EdgeInsets.all(AppSpacing.md),
@@ -91,7 +103,7 @@ class _SaveButton extends StatelessWidget {
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(AppSpacing.xl * 1.5),
         ),
-        child: const Text(AppStrings.save),
+        child: Text(label),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
+import 'package:fridge/domain/entity/ingredient.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
 import 'package:fridge/ui/add_ingredient/add_ingredient_page.dart';
 import 'package:fridge/ui/home/bloc/home_bloc.dart';
@@ -132,6 +133,17 @@ class _HomeBody extends StatelessWidget {
       context.read<HomeBloc>().add(const HomeStarted());
     }
 
+    Future<void> openEditIngredient(Ingredient ingredient) async {
+      final messenger = ScaffoldMessenger.of(context);
+      final saved = await Navigator.of(
+        context,
+      ).push(AddIngredientPage.route(initial: ingredient));
+      if (saved != true) return;
+
+      const snackBar = SnackBar(content: Text(AppStrings.ingredientUpdated));
+      messenger.showSnackBar(snackBar);
+    }
+
     switch (state.status) {
       case HomeStatus.initial:
       case HomeStatus.loading:
@@ -142,7 +154,10 @@ class _HomeBody extends StatelessWidget {
         if (state.ingredients.isEmpty) {
           return const EmptyIngredientView();
         }
-        return IngredientList(ingredients: state.ingredients);
+        return IngredientList(
+          ingredients: state.ingredients,
+          onTileTapped: openEditIngredient,
+        );
     }
   }
 }

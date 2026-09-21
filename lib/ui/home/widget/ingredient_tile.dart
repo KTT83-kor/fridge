@@ -11,12 +11,14 @@ class IngredientTile extends StatelessWidget {
     required this.ingredient,
     required this.today,
     required this.onRemoved,
+    required this.onTap,
     super.key,
   });
 
   final Ingredient ingredient;
   final DateTime today;
   final VoidCallback onRemoved;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +42,7 @@ class IngredientTile extends StatelessWidget {
       ),
       onDismissed: handleDismissed,
       child: ListTile(
+        onTap: onTap,
         leading: _DDayBadge(daysLeft: daysLeft, color: freshnessColor),
         title: Text(ingredient.name),
         subtitle: Text(subtitle),
