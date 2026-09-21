@@ -48,7 +48,7 @@ void main() {
       build: buildBloc,
       act: (bloc) => bloc.add(const AddIngredientNameChanged('우유')),
       verify: (bloc) {
-        expect(bloc.state.expiresAt, DateTime(2026, 9, 24));
+        expect(bloc.state.expiresAt, DateTime(2026, 9, 20));
         expect(bloc.state.hasShelfLifeSuggestion, isTrue);
       },
     );
@@ -79,7 +79,7 @@ void main() {
         ..add(const AddIngredientNameChanged('돼지고기'))
         ..add(const AddIngredientStoragePlaceChanged(StoragePlace.freezer)),
       verify: (bloc) {
-        expect(bloc.state.expiresAt, DateTime(2027, 1, 15));
+        expect(bloc.state.expiresAt, DateTime(2027, 2, 14));
       },
     );
 
@@ -90,7 +90,7 @@ void main() {
         ..add(const AddIngredientNameChanged('우유'))
         ..add(AddIngredientPurchasedAtChanged(DateTime(2026, 9, 20))),
       verify: (bloc) {
-        expect(bloc.state.expiresAt, DateTime(2026, 9, 27));
+        expect(bloc.state.expiresAt, DateTime(2026, 9, 23));
       },
     );
   });
@@ -140,7 +140,7 @@ void main() {
         ..add(AddIngredientExpiresAtChanged(DateTime(2026, 10, 2)))
         ..add(const AddIngredientExpiresAtReset()),
       verify: (bloc) {
-        expect(bloc.state.expiresAt, DateTime(2026, 9, 24));
+        expect(bloc.state.expiresAt, DateTime(2026, 9, 20));
         expect(bloc.state.isExpiryManual, isFalse);
       },
     );
@@ -216,7 +216,7 @@ void main() {
         expect(saved.name, '우유');
         expect(saved.amount, 2);
         expect(saved.unit, 'mL');
-        expect(saved.expiresAt, DateTime(2026, 9, 24));
+        expect(saved.expiresAt, DateTime(2026, 9, 20));
       },
     );
 

@@ -31,7 +31,7 @@ void main() {
       final found = repository.findByName('우유');
 
       expect(found?.name, '우유');
-      expect(found?.fridgeDays, 7);
+      expect(found?.fridgeDays, 3);
     });
 
     test('앞뒤 공백과 사이 공백을 무시한다', () {
@@ -72,8 +72,8 @@ void main() {
     test('보관 장소마다 다른 일수를 준다', () {
       final pork = repository.findByName('돼지고기');
 
-      expect(pork?.daysFor(StoragePlace.fridge), 3);
-      expect(pork?.daysFor(StoragePlace.freezer), 120);
+      expect(pork?.daysFor(StoragePlace.fridge), 4);
+      expect(pork?.daysFor(StoragePlace.freezer), 150);
       expect(pork?.daysFor(StoragePlace.pantry), 1);
     });
   });

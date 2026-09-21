@@ -119,7 +119,7 @@ void main() {
       verify: (bloc) {
         final draft = bloc.state.drafts.single;
         expect(draft.storagePlace, StoragePlace.freezer);
-        expect(draft.expiresAt, DateTime(2027, 1, 15));
+        expect(draft.expiresAt, DateTime(2027, 2, 14));
         expect(draft.hasShelfLifeSuggestion, isTrue);
       },
     );
@@ -162,7 +162,7 @@ void main() {
           const QuickAddDraftStoragePlaceChanged(0, StoragePlace.freezer),
         ),
       verify: (bloc) {
-        expect(bloc.state.drafts.single.expiresAt, DateTime(2027, 1, 15));
+        expect(bloc.state.drafts.single.expiresAt, DateTime(2027, 2, 14));
       },
     );
 

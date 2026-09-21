@@ -15,7 +15,7 @@ void main() {
         purchasedAt: purchasedAt,
       );
 
-      expect(expiresAt, DateTime(2026, 9, 24));
+      expect(expiresAt, DateTime(2026, 9, 20));
     });
 
     test('냉동이면 더 먼 날짜를 준다', () {
@@ -25,7 +25,7 @@ void main() {
         purchasedAt: purchasedAt,
       );
 
-      expect(frozen, DateTime(2027, 1, 15));
+      expect(frozen, DateTime(2027, 2, 14));
     });
 
     test('표에 없는 재료는 null을 준다', () {
@@ -45,7 +45,7 @@ void main() {
         purchasedAt: DateTime(2026, 9, 17, 22, 30),
       );
 
-      expect(expiresAt, DateTime(2026, 9, 24));
+      expect(expiresAt, DateTime(2026, 9, 20));
     });
   });
 }
