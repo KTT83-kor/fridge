@@ -3,21 +3,27 @@ import 'dart:typed_data';
 
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/result/result.dart';
-import 'package:fridge/data/datasource/gemini_receipt_data_source.dart';
+import 'package:fridge/data/datasource/gemini_ingredient_image_data_source.dart';
+import 'package:fridge/domain/entity/ingredient_image_source_kind.dart';
 import 'package:fridge/domain/entity/parsed_ingredient.dart';
-import 'package:fridge/domain/repository/receipt_parsing_repository.dart';
+import 'package:fridge/domain/repository/image_ingredient_parsing_repository.dart';
 
-class ReceiptParsingRepositoryImpl implements ReceiptParsingRepository {
-  const ReceiptParsingRepositoryImpl(this._dataSource);
+class ImageIngredientParsingRepositoryImpl
+    implements ImageIngredientParsingRepository {
+  const ImageIngredientParsingRepositoryImpl(this._dataSource);
 
-  final GeminiReceiptDataSource _dataSource;
+  final GeminiIngredientImageDataSource _dataSource;
 
   @override
   Future<Result<List<ParsedIngredient>>> parseImage(
     Uint8List imageBytes,
+    IngredientImageSourceKind sourceKind,
   ) async {
     try {
-      final responseText = await _dataSource.extractIngredients(imageBytes);
+      final responseText = await _dataSource.extractIngredients(
+        imageBytes,
+        sourceKind,
+      );
       final ingredients = _parseIngredients(responseText);
       return ResultSuccess(ingredients);
     } on GeminiApiKeyMissingException catch (error) {

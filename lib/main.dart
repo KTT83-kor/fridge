@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fridge/app.dart';
+import 'package:fridge/data/datasource/gemini_ingredient_image_data_source.dart';
 import 'package:fridge/data/datasource/gemini_menu_data_source.dart';
-import 'package:fridge/data/datasource/gemini_receipt_data_source.dart';
 import 'package:fridge/data/datasource/ingredient_local_data_source.dart';
+import 'package:fridge/data/repository/image_ingredient_parsing_repository_impl.dart';
 import 'package:fridge/data/repository/ingredient_repository_impl.dart';
 import 'package:fridge/data/repository/menu_suggestion_repository_impl.dart';
-import 'package:fridge/data/repository/receipt_parsing_repository_impl.dart';
 import 'package:fridge/data/repository/shelf_life_repository_impl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,11 +28,11 @@ Future<void> main() async {
     geminiMenuDataSource,
   );
 
-  final geminiReceiptDataSource = GeminiReceiptDataSource(
+  final geminiIngredientImageDataSource = GeminiIngredientImageDataSource(
     apiKey: geminiApiKey,
   );
-  final receiptParsingRepository = ReceiptParsingRepositoryImpl(
-    geminiReceiptDataSource,
+  final imageIngredientParsingRepository = ImageIngredientParsingRepositoryImpl(
+    geminiIngredientImageDataSource,
   );
 
   runApp(
@@ -40,7 +40,7 @@ Future<void> main() async {
       ingredientRepository: ingredientRepository,
       shelfLifeRepository: shelfLifeRepository,
       menuSuggestionRepository: menuSuggestionRepository,
-      receiptParsingRepository: receiptParsingRepository,
+      imageIngredientParsingRepository: imageIngredientParsingRepository,
     ),
   );
 }

@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:fridge/domain/entity/ingredient_image_source_kind.dart';
 import 'package:http/http.dart' as http;
 
-class GeminiReceiptDataSource {
-  GeminiReceiptDataSource({
+class GeminiIngredientImageDataSource {
+  GeminiIngredientImageDataSource({
     required String apiKey,
     http.Client? client,
     Duration retryDelay = const Duration(seconds: 2),
@@ -21,21 +22,29 @@ class GeminiReceiptDataSource {
   static const _maxAttempts = 3;
   static const _retryStatusCodes = {429, 503};
 
-  static const _prompt =
+  static const _receiptPrompt =
       '이 영수증 사진에서 식재료로 보이는 상품명만 뽑아라. 상품명은 영수증에 '
       '적힌 표현을 최대한 살리되 규격·용량 표기(예: 1L, 500g)가 있으면 '
       'amount와 unit으로 분리해라. 봉투값·할인·부가세 같은 비상품 항목은 '
       '제외해라.';
 
+  static const _productPhotoPrompt =
+      '이 사진에 찍힌 식재료(장바구니에 담긴 여러 개일 수도, 낱개 상품일 '
+      '수도 있다)를 모두 찾아 이름을 알려줘라. 포장지에 규격·용량 표기가 '
+      '보이면 amount와 unit으로 분리해라. 식재료가 아닌 물건은 제외해라.';
+
   final String _apiKey;
   final http.Client _client;
   final Duration _retryDelay;
 
-  Future<String> extractIngredients(Uint8List imageBytes) async {
+  Future<String> extractIngredients(
+    Uint8List imageBytes,
+    IngredientImageSourceKind sourceKind,
+  ) async {
     if (_apiKey.isEmpty) throw const GeminiApiKeyMissingException();
 
     final uri = Uri.parse('$_endpoint?key=$_apiKey');
-    final body = jsonEncode(_buildRequestBody(imageBytes));
+    final body = jsonEncode(_buildRequestBody(imageBytes, sourceKind));
 
     http.Response? lastResponse;
     for (var attempt = 1; attempt <= _maxAttempts; attempt++) {
@@ -59,12 +68,20 @@ class GeminiReceiptDataSource {
     );
   }
 
-  Map<String, dynamic> _buildRequestBody(Uint8List imageBytes) {
+  Map<String, dynamic> _buildRequestBody(
+    Uint8List imageBytes,
+    IngredientImageSourceKind sourceKind,
+  ) {
+    final prompt = switch (sourceKind) {
+      IngredientImageSourceKind.receipt => _receiptPrompt,
+      IngredientImageSourceKind.productPhoto => _productPhotoPrompt,
+    };
+
     return {
       'contents': [
         {
           'parts': [
-            {'text': _prompt},
+            {'text': prompt},
             {
               'inline_data': {
                 'mime_type': 'image/jpeg',

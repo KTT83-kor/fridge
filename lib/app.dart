@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/theme/app_theme.dart';
+import 'package:fridge/domain/repository/image_ingredient_parsing_repository.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
 import 'package:fridge/domain/repository/menu_suggestion_repository.dart';
-import 'package:fridge/domain/repository/receipt_parsing_repository.dart';
 import 'package:fridge/domain/repository/shelf_life_repository.dart';
 import 'package:fridge/ui/home/home_page.dart';
 
@@ -14,14 +14,14 @@ class FridgeApp extends StatelessWidget {
     required this.ingredientRepository,
     required this.shelfLifeRepository,
     required this.menuSuggestionRepository,
-    required this.receiptParsingRepository,
+    required this.imageIngredientParsingRepository,
     super.key,
   });
 
   final IngredientRepository ingredientRepository;
   final ShelfLifeRepository shelfLifeRepository;
   final MenuSuggestionRepository menuSuggestionRepository;
-  final ReceiptParsingRepository receiptParsingRepository;
+  final ImageIngredientParsingRepository imageIngredientParsingRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +36,8 @@ class FridgeApp extends StatelessWidget {
         RepositoryProvider<MenuSuggestionRepository>.value(
           value: menuSuggestionRepository,
         ),
-        RepositoryProvider<ReceiptParsingRepository>.value(
-          value: receiptParsingRepository,
+        RepositoryProvider<ImageIngredientParsingRepository>.value(
+          value: imageIngredientParsingRepository,
         ),
       ],
       child: MaterialApp(

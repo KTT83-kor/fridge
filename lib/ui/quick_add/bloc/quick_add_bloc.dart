@@ -5,10 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/result/result.dart';
 import 'package:fridge/domain/entity/ingredient.dart';
+import 'package:fridge/domain/entity/ingredient_image_source_kind.dart';
 import 'package:fridge/domain/entity/parsed_ingredient.dart';
 import 'package:fridge/domain/entity/storage_place.dart';
+import 'package:fridge/domain/repository/image_ingredient_parsing_repository.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
-import 'package:fridge/domain/repository/receipt_parsing_repository.dart';
 import 'package:fridge/domain/repository/shelf_life_repository.dart';
 import 'package:fridge/domain/usecase/parse_ingredient_lines.dart';
 import 'package:fridge/domain/usecase/suggest_expiry_date.dart';
@@ -22,13 +23,13 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
   QuickAddBloc({
     required IngredientRepository ingredientRepository,
     required ShelfLifeRepository shelfLifeRepository,
-    required ReceiptParsingRepository receiptParsingRepository,
+    required ImageIngredientParsingRepository imageIngredientParsingRepository,
     required DateTime today,
     ParseIngredientLines parseLines = const ParseIngredientLines(),
     Uuid uuid = const Uuid(),
   }) : _ingredientRepository = ingredientRepository,
        _shelfLifeRepository = shelfLifeRepository,
-       _receiptParsingRepository = receiptParsingRepository,
+       _imageIngredientParsingRepository = imageIngredientParsingRepository,
        _suggestExpiryDate = SuggestExpiryDate(shelfLifeRepository),
        _parseLines = parseLines,
        _today = _atStartOfDay(today),
@@ -36,8 +37,8 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
        super(const QuickAddState()) {
     on<QuickAddTextChanged>(_onTextChanged);
     on<QuickAddParsed>(_onParsed);
-    on<QuickAddReceiptImagePicked>(_onReceiptImagePicked);
-    on<QuickAddReceiptParsed>(_onReceiptParsed);
+    on<QuickAddImagePicked>(_onImagePicked);
+    on<QuickAddImageParsed>(_onImageParsed);
     on<QuickAddDraftNameChanged>(_onDraftNameChanged);
     on<QuickAddDraftAmountChanged>(_onDraftAmountChanged);
     on<QuickAddDraftUnitChanged>(_onDraftUnitChanged);
@@ -52,7 +53,7 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
 
   final IngredientRepository _ingredientRepository;
   final ShelfLifeRepository _shelfLifeRepository;
-  final ReceiptParsingRepository _receiptParsingRepository;
+  final ImageIngredientParsingRepository _imageIngredientParsingRepository;
   final SuggestExpiryDate _suggestExpiryDate;
   final ParseIngredientLines _parseLines;
   final DateTime _today;
@@ -68,21 +69,24 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
     emit(state.copyWith(drafts: drafts, status: QuickAddStatus.reviewing));
   }
 
-  Future<void> _onReceiptImagePicked(
-    QuickAddReceiptImagePicked event,
+  Future<void> _onImagePicked(
+    QuickAddImagePicked event,
     Emitter<QuickAddState> emit,
   ) async {
-    emit(state.copyWith(status: QuickAddStatus.parsing));
-    final result = await _receiptParsingRepository.parseImage(
-      event.imageBytes,
+    emit(
+      state.copyWith(
+        status: QuickAddStatus.parsing,
+        imageSourceKind: event.sourceKind,
+      ),
     );
-    add(QuickAddReceiptParsed(result));
+    final result = await _imageIngredientParsingRepository.parseImage(
+      event.imageBytes,
+      event.sourceKind,
+    );
+    add(QuickAddImageParsed(result, event.sourceKind));
   }
 
-  void _onReceiptParsed(
-    QuickAddReceiptParsed event,
-    Emitter<QuickAddState> emit,
-  ) {
+  void _onImageParsed(QuickAddImageParsed event, Emitter<QuickAddState> emit) {
     switch (event.result) {
       case ResultSuccess<List<ParsedIngredient>>(:final value):
         final drafts = value.map(_toDraft).toList();
@@ -90,7 +94,7 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
           emit(
             state.copyWith(
               status: QuickAddStatus.failure,
-              errorMessage: AppStrings.quickAddReceiptEmpty,
+              errorMessage: _emptyMessageFor(event.sourceKind),
             ),
           );
           return;
@@ -102,6 +106,15 @@ class QuickAddBloc extends Bloc<QuickAddEvent, QuickAddState> {
         emit(
           state.copyWith(status: QuickAddStatus.failure, errorMessage: message),
         );
+    }
+  }
+
+  String _emptyMessageFor(IngredientImageSourceKind sourceKind) {
+    switch (sourceKind) {
+      case IngredientImageSourceKind.receipt:
+        return AppStrings.quickAddReceiptEmpty;
+      case IngredientImageSourceKind.productPhoto:
+        return AppStrings.quickAddProductPhotoEmpty;
     }
   }
 

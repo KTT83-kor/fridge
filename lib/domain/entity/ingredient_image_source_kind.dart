@@ -1,0 +1,1 @@
+enum IngredientImageSourceKind { receipt, productPhoto }

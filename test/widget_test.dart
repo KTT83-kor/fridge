@@ -7,8 +7,8 @@ import 'package:fridge/domain/entity/ingredient.dart';
 import 'package:fridge/domain/entity/storage_place.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
 
+import 'helper/fake_image_ingredient_parsing_repository.dart';
 import 'helper/fake_menu_suggestion_repository.dart';
-import 'helper/fake_receipt_parsing_repository.dart';
 
 class _FakeIngredientRepository implements IngredientRepository {
   _FakeIngredientRepository(this._ingredients);
@@ -38,7 +38,8 @@ void main() {
         ingredientRepository: repository,
         shelfLifeRepository: const ShelfLifeRepositoryImpl(),
         menuSuggestionRepository: FakeMenuSuggestionRepository(),
-        receiptParsingRepository: FakeReceiptParsingRepository(),
+        imageIngredientParsingRepository:
+            FakeImageIngredientParsingRepository(),
       ),
     );
     await tester.pumpAndSettle();
@@ -64,7 +65,8 @@ void main() {
         ingredientRepository: repository,
         shelfLifeRepository: const ShelfLifeRepositoryImpl(),
         menuSuggestionRepository: FakeMenuSuggestionRepository(),
-        receiptParsingRepository: FakeReceiptParsingRepository(),
+        imageIngredientParsingRepository:
+            FakeImageIngredientParsingRepository(),
       ),
     );
     await tester.pumpAndSettle();

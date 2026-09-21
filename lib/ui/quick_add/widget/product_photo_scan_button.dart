@@ -5,8 +5,8 @@ import 'package:fridge/domain/entity/ingredient_image_source_kind.dart';
 import 'package:fridge/ui/quick_add/bloc/quick_add_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ReceiptScanButton extends StatelessWidget {
-  ReceiptScanButton({super.key, ImagePicker? imagePicker})
+class ProductPhotoScanButton extends StatelessWidget {
+  ProductPhotoScanButton({super.key, ImagePicker? imagePicker})
     : _imagePicker = imagePicker ?? ImagePicker();
 
   final ImagePicker _imagePicker;
@@ -21,14 +21,17 @@ class ReceiptScanButton extends StatelessWidget {
 
       final imageBytes = await photo.readAsBytes();
       bloc.add(
-        QuickAddImagePicked(imageBytes, IngredientImageSourceKind.receipt),
+        QuickAddImagePicked(
+          imageBytes,
+          IngredientImageSourceKind.productPhoto,
+        ),
       );
     }
 
     return OutlinedButton.icon(
       onPressed: pickImage,
-      icon: const Icon(Icons.receipt_long_outlined),
-      label: const Text(AppStrings.quickAddScanReceipt),
+      icon: const Icon(Icons.camera_alt_outlined),
+      label: const Text(AppStrings.quickAddScanProductPhoto),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(48),
       ),

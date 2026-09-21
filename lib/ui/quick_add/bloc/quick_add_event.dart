@@ -20,22 +20,24 @@ final class QuickAddParsed extends QuickAddEvent {
   const QuickAddParsed();
 }
 
-final class QuickAddReceiptImagePicked extends QuickAddEvent {
-  const QuickAddReceiptImagePicked(this.imageBytes);
+final class QuickAddImagePicked extends QuickAddEvent {
+  const QuickAddImagePicked(this.imageBytes, this.sourceKind);
 
   final Uint8List imageBytes;
+  final IngredientImageSourceKind sourceKind;
 
   @override
-  List<Object?> get props => [imageBytes];
+  List<Object?> get props => [imageBytes, sourceKind];
 }
 
-final class QuickAddReceiptParsed extends QuickAddEvent {
-  const QuickAddReceiptParsed(this.result);
+final class QuickAddImageParsed extends QuickAddEvent {
+  const QuickAddImageParsed(this.result, this.sourceKind);
 
   final Result<List<ParsedIngredient>> result;
+  final IngredientImageSourceKind sourceKind;
 
   @override
-  List<Object?> get props => [result];
+  List<Object?> get props => [result, sourceKind];
 }
 
 final class QuickAddDraftNameChanged extends QuickAddEvent {

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/theme/app_spacing.dart';
+import 'package:fridge/domain/entity/ingredient_image_source_kind.dart';
+import 'package:fridge/domain/repository/image_ingredient_parsing_repository.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
-import 'package:fridge/domain/repository/receipt_parsing_repository.dart';
 import 'package:fridge/domain/repository/shelf_life_repository.dart';
 import 'package:fridge/ui/quick_add/bloc/quick_add_bloc.dart';
+import 'package:fridge/ui/quick_add/widget/product_photo_scan_button.dart';
 import 'package:fridge/ui/quick_add/widget/quick_add_text_field.dart';
 import 'package:fridge/ui/quick_add/widget/quick_ingredient_review_list.dart';
 import 'package:fridge/ui/quick_add/widget/receipt_scan_button.dart';
@@ -26,7 +28,8 @@ class QuickAddPage extends StatelessWidget {
     return QuickAddBloc(
       ingredientRepository: context.read<IngredientRepository>(),
       shelfLifeRepository: context.read<ShelfLifeRepository>(),
-      receiptParsingRepository: context.read<ReceiptParsingRepository>(),
+      imageIngredientParsingRepository: context
+          .read<ImageIngredientParsingRepository>(),
       today: DateTime.now(),
     );
   }
@@ -81,7 +84,7 @@ class _QuickAddBody extends StatelessWidget {
       case QuickAddStatus.editing:
         return const QuickAddTextField();
       case QuickAddStatus.parsing:
-        return const _ReceiptScanningView();
+        return _ImageScanningView(sourceKind: state.imageSourceKind);
       case QuickAddStatus.reviewing:
       case QuickAddStatus.submitting:
       case QuickAddStatus.success:
@@ -94,18 +97,26 @@ class _QuickAddBody extends StatelessWidget {
   }
 }
 
-class _ReceiptScanningView extends StatelessWidget {
-  const _ReceiptScanningView();
+class _ImageScanningView extends StatelessWidget {
+  const _ImageScanningView({required this.sourceKind});
+
+  final IngredientImageSourceKind sourceKind;
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final message = switch (sourceKind) {
+      IngredientImageSourceKind.receipt => AppStrings.quickAddScanning,
+      IngredientImageSourceKind.productPhoto =>
+        AppStrings.quickAddScanningProductPhoto,
+    };
+
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: AppSpacing.md),
-          Text(AppStrings.quickAddScanning),
+          const CircularProgressIndicator(),
+          const SizedBox(height: AppSpacing.md),
+          Text(message),
         ],
       ),
     );
@@ -153,7 +164,13 @@ class _ParseButton extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ReceiptScanButton(),
+          Row(
+            children: [
+              Expanded(child: ReceiptScanButton()),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(child: ProductPhotoScanButton()),
+            ],
+          ),
           const SizedBox(height: AppSpacing.sm),
           FilledButton(
             onPressed: onPressed,

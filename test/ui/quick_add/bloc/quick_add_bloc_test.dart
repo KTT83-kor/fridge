@@ -5,10 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fridge/core/result/result.dart';
 import 'package:fridge/data/repository/shelf_life_repository_impl.dart';
 import 'package:fridge/domain/entity/ingredient.dart';
+import 'package:fridge/domain/entity/ingredient_image_source_kind.dart';
 import 'package:fridge/domain/entity/parsed_ingredient.dart';
 import 'package:fridge/domain/entity/storage_place.dart';
+import 'package:fridge/domain/repository/image_ingredient_parsing_repository.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
-import 'package:fridge/domain/repository/receipt_parsing_repository.dart';
 import 'package:fridge/ui/quick_add/bloc/quick_add_bloc.dart';
 
 class _RecordingIngredientRepository implements IngredientRepository {
@@ -30,12 +31,14 @@ class _RecordingIngredientRepository implements IngredientRepository {
   }
 }
 
-class _StubReceiptParsingRepository implements ReceiptParsingRepository {
+class _StubImageIngredientParsingRepository
+    implements ImageIngredientParsingRepository {
   Result<List<ParsedIngredient>> parseResult = const ResultSuccess([]);
 
   @override
   Future<Result<List<ParsedIngredient>>> parseImage(
     Uint8List imageBytes,
+    IngredientImageSourceKind sourceKind,
   ) async {
     return parseResult;
   }
@@ -44,20 +47,21 @@ class _StubReceiptParsingRepository implements ReceiptParsingRepository {
 void main() {
   final today = DateTime(2026, 9, 17);
   late _RecordingIngredientRepository ingredientRepository;
-  late _StubReceiptParsingRepository receiptParsingRepository;
+  late _StubImageIngredientParsingRepository imageIngredientParsingRepository;
 
   QuickAddBloc buildBloc() {
     return QuickAddBloc(
       ingredientRepository: ingredientRepository,
       shelfLifeRepository: const ShelfLifeRepositoryImpl(),
-      receiptParsingRepository: receiptParsingRepository,
+      imageIngredientParsingRepository: imageIngredientParsingRepository,
       today: today,
     );
   }
 
   setUp(() {
     ingredientRepository = _RecordingIngredientRepository();
-    receiptParsingRepository = _StubReceiptParsingRepository();
+    imageIngredientParsingRepository =
+        _StubImageIngredientParsingRepository();
   });
 
   group('파싱', () {
