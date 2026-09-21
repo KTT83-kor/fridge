@@ -3,7 +3,14 @@ import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/theme/app_spacing.dart';
 
 class EmptyIngredientView extends StatelessWidget {
-  const EmptyIngredientView({super.key});
+  const EmptyIngredientView({
+    this.title = AppStrings.emptyIngredients,
+    this.hint = AppStrings.emptyIngredientsHint,
+    super.key,
+  });
+
+  final String title;
+  final String? hint;
 
   @override
   Widget build(BuildContext context) {
@@ -11,6 +18,7 @@ class EmptyIngredientView extends StatelessWidget {
     final hintStyle = theme.textTheme.bodySmall?.copyWith(
       color: theme.colorScheme.outline,
     );
+    final hintText = hint;
 
     return Center(
       child: Column(
@@ -22,9 +30,11 @@ class EmptyIngredientView extends StatelessWidget {
             color: theme.colorScheme.outline,
           ),
           const SizedBox(height: AppSpacing.md),
-          Text(AppStrings.emptyIngredients, style: theme.textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.xs),
-          Text(AppStrings.emptyIngredientsHint, style: hintStyle),
+          Text(title, style: theme.textTheme.titleMedium),
+          if (hintText != null) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(hintText, style: hintStyle),
+          ],
         ],
       ),
     );

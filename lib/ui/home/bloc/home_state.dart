@@ -13,6 +13,15 @@ final class HomeState extends Equatable {
   final List<Ingredient> ingredients;
   final String errorMessage;
 
+  List<Ingredient> urgentIngredientsFrom(DateTime today) {
+    return ingredients
+        .where(
+          (ingredient) =>
+              ingredient.daysLeftFrom(today) <= Freshness.soonThresholdDays,
+        )
+        .toList();
+  }
+
   HomeState copyWith({
     HomeStatus? status,
     List<Ingredient>? ingredients,

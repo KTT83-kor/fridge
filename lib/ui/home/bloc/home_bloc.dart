@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fridge/core/constant/app_strings.dart';
 import 'package:fridge/core/result/result.dart';
+import 'package:fridge/domain/entity/freshness.dart';
 import 'package:fridge/domain/entity/ingredient.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
 import 'package:fridge/domain/usecase/sort_ingredients_by_urgency.dart';

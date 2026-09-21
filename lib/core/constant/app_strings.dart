@@ -12,6 +12,11 @@ abstract final class AppStrings {
 
   static const dDay = 'D-DAY';
 
+  static String urgentBannerTitle(int count) => '소진 임박 재료 $count개';
+  static const urgentBannerHint = '눌러서 확인하세요';
+  static const urgentIngredientsTitle = '소진 임박 재료';
+  static const urgentIngredientsEmpty = '임박한 재료가 없습니다';
+
   static const addIngredientTitle = '재료 담기';
   static const editIngredientTitle = '재료 수정';
   static const saveEdit = '수정';

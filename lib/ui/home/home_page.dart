@@ -7,9 +7,11 @@ import 'package:fridge/domain/entity/ingredient.dart';
 import 'package:fridge/domain/repository/ingredient_repository.dart';
 import 'package:fridge/ui/add_ingredient/add_ingredient_page.dart';
 import 'package:fridge/ui/home/bloc/home_bloc.dart';
+import 'package:fridge/ui/home/urgent_ingredients_page.dart';
 import 'package:fridge/ui/home/widget/empty_ingredient_view.dart';
 import 'package:fridge/ui/home/widget/ingredient_list.dart';
 import 'package:fridge/ui/home/widget/load_failed_view.dart';
+import 'package:fridge/ui/home/widget/urgent_banner.dart';
 import 'package:fridge/ui/menu_suggestion/menu_suggestion_page.dart';
 import 'package:fridge/ui/quick_add/quick_add_page.dart';
 
@@ -144,6 +146,12 @@ class _HomeBody extends StatelessWidget {
       messenger.showSnackBar(snackBar);
     }
 
+    void openUrgentIngredients() {
+      final homeBloc = context.read<HomeBloc>();
+      final route = UrgentIngredientsPage.route(homeBloc: homeBloc);
+      unawaited(Navigator.of(context).push(route));
+    }
+
     switch (state.status) {
       case HomeStatus.initial:
       case HomeStatus.loading:
@@ -151,12 +159,32 @@ class _HomeBody extends StatelessWidget {
       case HomeStatus.failure:
         return LoadFailedView(message: state.errorMessage, onRetry: reload);
       case HomeStatus.success:
+        final urgentIngredients = state.urgentIngredientsFrom(DateTime.now());
+        final banner = urgentIngredients.isEmpty
+            ? null
+            : UrgentBanner(
+                count: urgentIngredients.length,
+                onTap: openUrgentIngredients,
+              );
+
         if (state.ingredients.isEmpty) {
-          return const EmptyIngredientView();
+          return Column(
+            children: [
+              ?banner,
+              const Expanded(child: EmptyIngredientView()),
+            ],
+          );
         }
-        return IngredientList(
-          ingredients: state.ingredients,
-          onTileTapped: openEditIngredient,
+        return Column(
+          children: [
+            ?banner,
+            Expanded(
+              child: IngredientList(
+                ingredients: state.ingredients,
+                onTileTapped: openEditIngredient,
+              ),
+            ),
+          ],
         );
     }
   }
